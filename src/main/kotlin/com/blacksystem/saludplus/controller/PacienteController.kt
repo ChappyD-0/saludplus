@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
-@RequestMapping("/api/pacientes")
+@RequestMapping("/saludplus")
 @Validated
 class PacienteController(
     private val service: PacienteService
@@ -35,7 +35,7 @@ class PacienteController(
     @PostMapping
     fun create(@RequestBody @Valid body: PacienteCreateDTO): ResponseEntity<PacienteResponseDTO> {
         val saved = service.create(Paciente(body.nombre, body.apellido, body.edad, body.telefono))
-        val uri = URI.create("/api/pacientes/${saved.idPaciente}")
+        val uri = URI.create("/pacientes/${saved.idPaciente}")
         return ResponseEntity.created(uri).body(saved.toResponse())
     }
 
@@ -48,7 +48,7 @@ class PacienteController(
         service.update(id) { it.applyPatch(body) }.toResponse()
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Long): ResponseEntity<Void> {
+    fun delete(@PathVariable id: Long): ResponseEntity<Unit> {
         service.delete(id)
         return ResponseEntity.noContent().build()
     }

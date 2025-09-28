@@ -1,6 +1,5 @@
 package com.blacksystem.saludplus.model.dto.paciente
 
-import jakarta.annotation.sql.DataSourceDefinition
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 
