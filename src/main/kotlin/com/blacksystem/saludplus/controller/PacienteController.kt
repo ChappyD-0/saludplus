@@ -1,14 +1,12 @@
 package com.blacksystem.saludplus.controller
 
-import com.blacksystem.saludplus.model.dto.paciente.PacienteCreateDTO
-import com.blacksystem.saludplus.model.dto.paciente.PacientePatchDTO
-import com.blacksystem.saludplus.model.dto.paciente.PacienteResponseDTO
-import com.blacksystem.saludplus.model.dto.paciente.PacienteUpdateDTO
+import com.blacksystem.saludplus.model.dto.paciente.*
 import com.blacksystem.saludplus.model.paciente.Paciente
 import com.blacksystem.saludplus.model.paciente.applyPatch
 import com.blacksystem.saludplus.model.paciente.applyPut
 import com.blacksystem.saludplus.model.paciente.toResponse
 import com.blacksystem.saludplus.service.PacienteService
+import com.blacksystem.saludplus.service.mail.MailService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -21,7 +19,8 @@ import java.net.URI
 @RequestMapping("/saludplus")
 @Validated
 class PacienteController(
-    private val service: PacienteService
+    private val service: PacienteService,
+    private val mail: MailService,              // ← inyectamos mail
 ) {
 
     @GetMapping
@@ -34,8 +33,18 @@ class PacienteController(
 
     @PostMapping
     fun create(@RequestBody @Valid body: PacienteCreateDTO): ResponseEntity<PacienteResponseDTO> {
-        val saved = service.create(Paciente(body.nombre, body.apellido, body.edad, body.telefono))
-        val uri = URI.create("/pacientes/${saved.idPaciente}")
+        val saved = service.create(
+            Paciente(
+                body.nombre, body.apellido, body.edad, body.telefono,
+                body.curp, body.direccion, body.correo
+            )
+        )
+        // Enviar correo de bienvenida (best-effort, sin romper la respuesta)
+        runCatching {
+            mail.enviarBienvenida(saved.correo, saved.nombre)
+        }
+
+        val uri = URI.create("/saludplus/${saved.idPaciente}")
         return ResponseEntity.created(uri).body(saved.toResponse())
     }
 
@@ -52,4 +61,5 @@ class PacienteController(
         service.delete(id)
         return ResponseEntity.noContent().build()
     }
+
 }

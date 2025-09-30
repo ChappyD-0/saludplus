@@ -1,15 +1,16 @@
 package com.blacksystem.saludplus.model.paciente
 
-import com.blacksystem.saludplus.model.dto.paciente.PacientePatchDTO
-import com.blacksystem.saludplus.model.dto.paciente.PacienteResponseDTO
-import com.blacksystem.saludplus.model.dto.paciente.PacienteUpdateDTO
+import com.blacksystem.saludplus.model.dto.paciente.*
 
 fun Paciente.toResponse() = PacienteResponseDTO(
     id = this.idPaciente!!,
     nombre = this.nombre,
     apellido = this.apellido,
     edad = this.edad,
-    telefono = this.telefono
+    telefono = this.telefono,
+    curp = this.curp,
+    direccion = this.direccion,
+    correo = this.correo,
 )
 
 fun Paciente.applyPut(dto: PacienteUpdateDTO) {
@@ -17,6 +18,9 @@ fun Paciente.applyPut(dto: PacienteUpdateDTO) {
     apellido = dto.apellido
     edad = dto.edad
     telefono = dto.telefono
+    curp = dto.curp
+    direccion = dto.direccion
+    correo = dto.correo
 }
 
 fun Paciente.applyPatch(dto: PacientePatchDTO) {
@@ -24,4 +28,7 @@ fun Paciente.applyPatch(dto: PacientePatchDTO) {
     dto.apellido?.let { apellido = it }
     dto.edad?.let { edad = it }
     dto.telefono?.let { telefono = it }
+    dto.curp?.let { curp = it }
+    dto.direccion?.let { direccion = it }
+    dto.correo?.let { correo = it }
 }
